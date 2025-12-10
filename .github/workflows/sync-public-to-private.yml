@@ -1,0 +1,125 @@
+name: Sync Public Repo to Private Repo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - 'docs/public/assets/**'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      PRIVATE_REPO_OWNER: ${{ github.repository_owner }}
+      PRIVATE_REPO_NAME: plushub-private
+      PRIVATE_BRANCH: main
+    steps:
+      - name: Checkout public repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      
+      - name: Remove checkout auth header
+        run: |
+          git config --local --unset-all http.https://github.com/.extraheader || true
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+      
+      - name: Verify secret exists
+        run: |
+          if [ -z "${{ secrets.PRIVATE_REPO_TOKEN }}" ]; then
+            echo "❌ Error: PRIVATE_REPO_TOKEN secret is not set!"
+            exit 1
+          else
+            echo "✅ Secret found"
+            echo "Testing token with GitHub API..."
+            API_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.PRIVATE_REPO_TOKEN }}" https://api.github.com/repos/${{ env.PRIVATE_REPO_OWNER }}/${{ env.PRIVATE_REPO_NAME }} 2>&1)
+            if echo "$API_RESPONSE" | grep -q '"full_name": "'${{ env.PRIVATE_REPO_OWNER }}'/'${{ env.PRIVATE_REPO_NAME }}'"'; then
+              echo "✅ Token can access private repo via API"
+            else
+              echo "❌ Token cannot access private repo via API"
+              echo "API Response: $API_RESPONSE"
+            fi
+          fi
+        env:
+          PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      
+      - name: Add private repo as remote
+        run: |
+          git remote add private https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ env.PRIVATE_REPO_OWNER }}/${{ env.PRIVATE_REPO_NAME }}.git || \
+          git remote set-url private https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ env.PRIVATE_REPO_OWNER }}/${{ env.PRIVATE_REPO_NAME }}.git
+          echo "✅ Remote 'private' configured"
+      
+      - name: Test private repo access
+        run: |
+          echo "Testing access to private repo..."
+          if GIT_TERMINAL_PROMPT=0 git ls-remote private HEAD >/dev/null 2>&1; then
+            echo "✅ Access confirmed"
+          else
+            echo "❌ Git cannot reach the private repo"
+            exit 1
+          fi
+      
+      - name: Fetch from private repo
+        run: |
+          GIT_TERMINAL_PROMPT=0 git fetch private ${{ env.PRIVATE_BRANCH }} || echo "⚠️  Private repo fetch failed"
+      
+      - name: Sync docs to private repo
+        run: |
+          # Start from private main (which has full codebase)
+          if git ls-remote --heads private ${{ env.PRIVATE_BRANCH }} | grep -q ${{ env.PRIVATE_BRANCH }}; then
+            git fetch private ${{ env.PRIVATE_BRANCH }}
+            git checkout -b sync-branch FETCH_HEAD
+            echo "✅ Checked out private repo (preserving full codebase)"
+          else
+            echo "ℹ️ Private branch not found; creating orphan sync-branch"
+            git checkout --orphan sync-branch
+          fi
+
+          # Update ONLY markdown files and public assets from public repo
+          set -e
+          
+          # Find all .md files from public repo and update them in private repo
+          for f in $(git ls-tree -r --name-only origin/main | grep -E '\.md$' || true); do
+            mkdir -p "$(dirname "$f")" 2>/dev/null || true
+            git checkout origin/main -- "$f" 2>/dev/null || true
+          done
+
+          # Public assets under docs/public/assets
+          for f in $(git ls-tree -r --name-only origin/main -- docs/public/assets 2>/dev/null || true); do
+            mkdir -p "$(dirname "$f")"
+            git checkout origin/main -- "$f" 2>/dev/null || true
+          done
+
+          # Stage only the updated markdown files and assets (preserves all other files)
+          git add *.md 2>/dev/null || true
+          git add docs/*.md docs/**/*.md 2>/dev/null || true
+          git add docs/public/assets 2>/dev/null || true
+
+          # Commit only if there are changes to markdown files
+          if ! git diff --cached --quiet; then
+            git commit -m "Sync: update docs from public repo"
+            echo "✅ Committed markdown file updates"
+          else
+            echo "ℹ️ No changes to markdown files"
+          fi
+      
+      - name: Push to private repo
+        run: |
+          echo "Pushing to private repo..."
+          GIT_TERMINAL_PROMPT=0 git push private sync-branch:${{ env.PRIVATE_BRANCH }} --force
+        env:
+          GIT_TERMINAL_PROMPT: 0
+      
+      - name: Cleanup
+        run: |
+          git checkout main
+          git branch -D sync-branch
+
