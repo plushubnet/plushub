@@ -1,64 +1,84 @@
+<div align="center">
+  <img src="og-image.png" alt="PLUS HUB - Your Ultimate High Rated Content Hub" width="1200" />
+</div>
+
 # PLUS HUB
 
-The largest collection of free stuff on the internet!
+**Your Ultimate High Rated Content Hub!**
 
-Built with [VitePress](https://vitepress.dev/) - a static site generator powered by Vite and Vue.
+The largest collection of free resources on the internet - movies, TV shows, anime, music, games, books, software, and more.
 
-## Getting Started
+🌐 **Website**: [https://plushub.net](https://plushub.net)
 
-### Prerequisites
+## 📚 About
 
-- Node.js 18+ 
-- npm or yarn
+PLUS HUB is a comprehensive resource directory that helps you discover high-quality free content across multiple categories. Whether you're looking for entertainment, educational materials, software, or tools, we've got you covered.
 
-### Installation
+## 🎯 Categories
 
-```bash
-# Install dependencies
-npm install
+- 🎬 **Movies, TV Shows & Anime** - Streaming and downloading resources
+- 🎵 **Music & Podcasts** - Audio content and radio stations
+- 🎮 **Gaming & Emulation** - Games, emulators, and gaming tools
+- 📖 **Books, Comics & Manga** - Reading materials in various formats
+- 💻 **Software & Tools** - Applications for various platforms
+- 🤖 **Artificial Intelligence** - AI resources and tools
+- 📱 **Mobile Apps** - Android and iOS applications
+- 🐧 **Linux & macOS** - Open-source software and tools
+- 🌍 **Non-English Content** - Resources in multiple languages
+- 🎓 **Educational** - Learning materials and courses
+- 🔒 **Privacy & Security** - Ad-blockers and privacy tools
+- 📦 **Miscellaneous** - Other useful resources
 
-# Start development server
-npm run dev
+## 🤝 Contributing
 
-# Build for production
-npm run build
+We welcome contributions! Help us improve PLUS HUB by:
 
-# Preview production build
-npm run preview
-```
+1. **Adding new resources** - Found a great site or tool? Add it!
+2. **Improving documentation** - Fix typos, clarify instructions, or add details
+3. **Updating information** - Keep existing entries current and accurate
+4. **Suggesting improvements** - Share your ideas for better organization
 
-## Project Structure
+### How to Contribute
 
-```
-plushub/
-├── docs/                 # Documentation source files
-│   ├── .vitepress/       # VitePress config and theme
-│   │   ├── config.js     # Site configuration
-│   │   └── theme/        # Custom theme
-│   ├── index.md          # Homepage
-│   └── ...               # Other markdown pages
-├── public/               # Static assets (in docs/public)
-│   └── assets/           # Images, icons, etc.
-└── package.json          # Dependencies and scripts
-```
+1. Click the **"Edit this page on GitHub"** button on any page
+2. Make your changes to the markdown file
+3. GitHub will automatically fork the repo and create a pull request
+4. We'll review your contribution and merge it if approved!
 
-## Development
+### Contribution Guidelines
 
-The site runs on `http://localhost:5173` by default during development.
+- Keep descriptions clear and concise
+- Verify links are working before adding
+- Follow the existing format and structure
+- Be respectful and maintain quality standards
 
-## Deployment
+## 📝 Documentation Structure
 
-Build the site and deploy the `docs/.vitepress/dist` directory to any static hosting service:
+All documentation is written in Markdown and located in the `docs/` directory:
 
-- Vercel
-- Netlify
-- GitHub Pages
-- Cloudflare Pages
+- `docs/index.md` - Homepage
+- `docs/streaming.md` - Movies, TV Shows & Anime
+- `docs/audio.md` - Music & Podcasts
+- `docs/gaming.md` - Gaming & Emulation
+- `docs/reading.md` - Books, Comics & Manga
+- And more...
 
-## License
+## 🖼️ Assets
 
-This project is open source and available for use.
+- **OG Image**: `og-image.png` - Used for social media previews and sharing
+
+## ⚖️ Disclaimer
+
+This site does not host any files. We only provide links and information about resources available on the internet. Users are responsible for ensuring they comply with applicable laws and terms of service.
+
+## 🔗 Links
+
+- 🌐 **Website**: [plushub.net](https://plushub.net)
+- 💬 **Discord**: [Join our community](https://discord.gg/2VWXMpzMj6)
+- 📖 **Glossary**: [The Piracy Glossary](https://plushub.net/The-Piracy-Glossary)
+
 
 ---
 
-**Note**: This site does not host any files.
+**Made with ❤️ by the PLUS HUB community**
+
